@@ -104,7 +104,7 @@ function constructPromptCommand(text) {
 
 function appendTaskRunning(token, text) {
     const commandQueueRunning = document.createElement('div');
-    commandQueueRunning.classList.add('command-queue-running');
+    commandQueueRunning.className = 'command-queue-running';
     commandQueueRunning.data = token;
 
     const commandQueueStatus = document.createElement('div');
@@ -134,6 +134,35 @@ function appendTaskRunning(token, text) {
     commandQueueRunning.appendChild(commandQueueCross);
 
     queue.appendChild(commandQueueRunning);
+
+    commandQueueCross.addEventListener('click', () => {
+        if (commandQueueRunning.className != 'command-queue-running') {
+            remove(commandQueueRunning);
+        }
+    })
+
+    let interval;
+    interval = setInterval(() => {
+        fetch(api_hostname + '/api/task/' + token)
+            .then(data => data.json())
+            .then(data => {
+                if (data.Status > 0) {
+                    if (data.Status === 1) {
+                        commandQueueRunning.className = 'command-queue-done';
+                        commandQueueStatusText.innerText = `"${text}" Done!`;
+                        commandQueuePrompt.innerText = data.Output;
+                        commandQueueStatusSymbol.src = '../media/vector/check.svg';
+                    }
+                    else {
+                        commandQueueRunning.className = 'command-queue-failed';
+                        commandQueueStatusText.innerText = 'Failed!';
+                        commandQueuePrompt.innerText = data.Output;
+                        commandQueueStatusSymbol.src = '../media/vector/emoji-frown.svg';
+                    }
+                    clearInterval(interval);
+                }
+            })
+    }, 3000);
 }
 
 class Command {

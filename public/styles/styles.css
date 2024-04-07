@@ -119,7 +119,7 @@ button {
 }
 
 .command-queue-running, .command-queue-done, .command-queue-failure {
-    max-height: 30px;
+    min-height: 30px;
 
     margin: 10px 20px;
     display: flex;
