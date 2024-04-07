@@ -118,7 +118,10 @@ button {
     flex-wrap: nowrap;
 }
 
-.command-queue-running, .command-queue-done, .command-queue-failure {
+.command-queue-running, .command-queue-done, .command-queue-failed {
+    transition: all 0.3s;
+    animation: 0.3s ease-out 0s 1 appear;
+
     min-height: 30px;
 
     margin: 10px 20px;
@@ -178,7 +181,7 @@ button {
     color: #fff;
 }
 
-.command-queue-failure {
+.command-queue-failed {
     background-color: #da5b5f;
     color: #fff;
 }

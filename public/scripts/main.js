@@ -137,7 +137,7 @@ function appendTaskRunning(token, text) {
 
     commandQueueCross.addEventListener('click', () => {
         if (commandQueueRunning.className != 'command-queue-running') {
-            remove(commandQueueRunning);
+            commandQueueRunning.remove();
         }
     })
 

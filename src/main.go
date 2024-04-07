@@ -13,9 +13,9 @@ import (
 )
 
 const (
-	TaskRunning = iota
-	TaskDone    = iota
-	TaskFailed  = iota
+	TASK_RUNNING = 0
+	TASK_DONE    = 1
+	TASK_FAILED  = 2
 )
 
 type Task struct {
@@ -118,7 +118,7 @@ func PostCommandExecuteHandler(w http.ResponseWriter, r *http.Request) {
 
 	task := &Task{
 		TaskToken: token,
-		Status:    TaskRunning,
+		Status:    TASK_RUNNING,
 		Output:    "",
 	}
 
@@ -141,11 +141,11 @@ func PostCommandExecuteHandler(w http.ResponseWriter, r *http.Request) {
 		stdout, err := cmd.Output()
 
 		if err != nil {
-			Tasks.ChangeStatus(token, TaskFailed, err.Error())
+			Tasks.ChangeStatus(token, TASK_FAILED, err.Error()+"\n"+string(stdout))
 			return
 		}
 
-		Tasks.ChangeStatus(token, TaskDone, string(stdout))
+		Tasks.ChangeStatus(token, TASK_DONE, string(stdout))
 	}()
 }
 
