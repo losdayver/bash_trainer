@@ -1,0 +1,222 @@
+* {
+    font-family: "Cutive Mono", monospace;
+}
+
+body {
+    background-color: #f0f0f0;
+    margin: 20px 0;
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1, h2 {
+    text-align: center;
+}
+
+.content-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    width: 80%;
+    border-radius: 10px;
+
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+    margin-top: 20px;
+}
+
+#prompt, #palette, #queue {
+    min-height: 111px;
+
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+
+    flex-wrap: wrap;
+
+    width: 80%;
+    border-radius: 10px;
+
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#prompt {
+    justify-content: start;
+}
+
+#prompt-buttons {
+    display: flex;
+    flex-direction: row;
+}
+
+.command-palette, .command-prompt, .command-queue {
+    animation: 0.3s ease-out 0s 1 appear;
+}
+
+.command-palette, .command-prompt, button {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    height: 30px;
+    padding: 10px 20px;
+    margin: 10px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+
+    font-size: 1rem;
+}
+
+button {
+    border: none;
+    text-decoration: none;
+    cursor: pointer;
+    outline: none;
+}
+
+@keyframes appear {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 100%;
+    }
+}
+
+.command-prompt-args {
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    margin-left: 10px;
+}
+
+.command-prompt-text {
+    pointer-events: none;
+}
+
+.prompt-command-container {
+    padding: 10px 20px;
+    margin: 0 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#queue {
+    flex-direction: column;
+    flex-wrap: nowrap;
+}
+
+.command-queue-running, .command-queue-done, .command-queue-failure {
+    max-height: 30px;
+
+    margin: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+
+    align-items: center;
+
+    border-radius: 10px;
+
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.command-queue-status {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.command-queue-status-text {
+    margin-left: 10px;
+}
+
+.command-queue-status-symbol {
+    width: 30px;
+}
+
+.command-queue-prompt {
+    font-size: 1rem;
+}
+
+.command-queue-cross {
+    height: 50px;
+    cursor: pointer;
+}
+
+button:hover,
+.command-prompt:hover,
+.command-palette:hover,
+.command-prompt-draggedover,
+.command-dragged,
+.command:active {
+    background-color: #2980b9 !important;
+}
+
+.command-palette,
+.command-prompt,
+.command-queue-running,
+button {
+    background-color: #3498db;
+    color: #fff;
+}
+
+.command-queue-done {
+    background-color: #8cdb7f;
+    color: #fff;
+}
+
+.command-queue-failure {
+    background-color: #da5b5f;
+    color: #fff;
+}
+
+/* HTML: <div class="loader"></div> */
+.loader {
+    margin: 0 40px;
+    width: 8px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    clip-path: inset(-45px);
+    box-shadow: -60px 15px, -60px 15px, -60px 15px;
+    transform: translateY(-15px);
+    animation: l19 1s infinite linear;
+}
+
+@keyframes l19 {
+    16.67% {
+        box-shadow: -60px 15px, -60px 15px, 19px 15px
+    }
+
+    33.33% {
+        box-shadow: -60px 15px, 0px 15px, 19px 15px
+    }
+
+    40%, 60% {
+        box-shadow: -19px 15px, 0px 15px, 19px 15px
+    }
+
+    66.67% {
+        box-shadow: -19px 15px, 0px 15px, 60px 15px
+    }
+
+    83.33% {
+        box-shadow: -19px 15px, 60px 15px, 60px 15px
+    }
+
+    100% {
+        box-shadow: 60px 15px, 60px 15px, 60px 15px
+    }
+}

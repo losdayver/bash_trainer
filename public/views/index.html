@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../styles/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cutive+Mono&display=swap" rel="stylesheet">
+    <title>Linux Command Tutorial</title>
+</head>
+
+<body>
+    <h1>Linux /bin/bash trainer</h1>
+
+    <div class="content-block">
+        <h2>Construct your Linux command:</h2>
+        <div id="prompt" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)"></div>
+        <div id="prompt-buttons">
+            <button id="prompt-buttons-execute">Execute command</button>
+            <button id="prompt-buttons-save">Save command to palette</button>
+        </div>
+    </div>
+
+    <div class="content-block">
+        <h2>Command palette:</h2>
+        <div id="palette"></div>
+    </div>
+
+    <div class="content-block">
+        <h2>Execution queue:</h2>
+        <div id="queue"></div>
+    </div>
+
+    <script src="../scripts/main.js" title="">
+    </script>
+
+</body>
+
+</html>
