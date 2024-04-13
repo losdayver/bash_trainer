@@ -111,7 +111,7 @@ function appendTaskRunning(token, text) {
     commandQueueStatus.classList.add('command-queue-status');
 
     const commandQueueStatusSymbol = document.createElement('img');
-    commandQueueStatusSymbol.src = '../media/vector/three-dots.svg';
+    commandQueueStatusSymbol.src = '/public/media/vector/three-dots.svg';
     commandQueueStatusSymbol.classList.add('command-queue-status-symbol');
 
     const commandQueuePrompt = document.createElement('div');
@@ -123,7 +123,7 @@ function appendTaskRunning(token, text) {
     commandQueueStatusText.innerText = 'Running...';
 
     const commandQueueCross = document.createElement('img');
-    commandQueueCross.src = '../media/vector/x.svg';
+    commandQueueCross.src = '/public/media/vector/x.svg';
     commandQueueCross.classList.add('command-queue-cross');
 
     commandQueueRunning.appendChild(commandQueueStatus);
@@ -151,13 +151,13 @@ function appendTaskRunning(token, text) {
                         commandQueueRunning.className = 'command-queue-done';
                         commandQueueStatusText.innerText = `"${text}" Done!`;
                         commandQueuePrompt.innerText = data.Output;
-                        commandQueueStatusSymbol.src = '../media/vector/check.svg';
+                        commandQueueStatusSymbol.src = '/public/media/vector/check.svg';
                     }
                     else {
                         commandQueueRunning.className = 'command-queue-failed';
                         commandQueueStatusText.innerText = 'Failed!';
                         commandQueuePrompt.innerText = data.Output;
-                        commandQueueStatusSymbol.src = '../media/vector/emoji-frown.svg';
+                        commandQueueStatusSymbol.src = '/public/media/vector/emoji-frown.svg';
                     }
                     clearInterval(interval);
                 }

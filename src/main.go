@@ -190,9 +190,19 @@ func GetCommandPalette(w http.ResponseWriter, r *http.Request) {
 func main() {
 	mux := http.NewServeMux()
 
+	fs := http.FileServer(http.Dir("./public/"))
+
+	// Map the URL path "/home/" to "index.html"
+	mux.Handle("/public/", http.StripPrefix("/public/", fs))
+
 	mux.HandleFunc("POST /api/command/execute/{$}", ApiWrapper(PostCommandExecuteHandler))
 	mux.HandleFunc("GET /api/task/{token}", ApiWrapper(GetTaskHandler))
 	mux.HandleFunc("OPTIONS /api/", OptionsCorsHandler)
+
+	// Serving index.html
+	mux.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./public/views/index.html")
+	})
 
 	log.Fatal(http.ListenAndServe(Origin, mux))
 }
