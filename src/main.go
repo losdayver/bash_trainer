@@ -134,9 +134,9 @@ func PostCommandExecuteHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonData)
 
 	go func() {
-		time.Sleep(time.Second * 10)
+		time.Sleep(time.Second * 1)
 
-		cmd := exec.Command("bash", "-c", body.Text)
+		cmd := exec.Command("bash", "-c", "cd ./Library/; "+body.Text)
 
 		stdout, err := cmd.Output()
 
