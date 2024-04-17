@@ -21,6 +21,8 @@ func ApiWrapper(handler func(w http.ResponseWriter, r *http.Request)) func(w htt
 }
 
 func main() {
+	persistence.Init()
+
 	mux := http.NewServeMux()
 
 	fs := http.FileServer(http.Dir("./public/"))

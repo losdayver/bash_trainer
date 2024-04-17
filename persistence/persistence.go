@@ -6,7 +6,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"os"
 	"strconv"
 
@@ -14,16 +13,16 @@ import (
 )
 
 type PgType struct {
-	host     string
-	port     int
-	user     string
-	password string
-	dbname   string
+	Host     string
+	Port     int
+	User     string
+	Password string
+	Dbname   string
 }
 
 type ConfigType struct {
 	Origin string
-	pg     PgType
+	Pg     PgType
 }
 
 type Account struct {
@@ -54,15 +53,12 @@ func Authenticate(username string, password string) (bool, error) {
 
 	hashPass := hex.EncodeToString(hash[:])
 
-	// psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-	// 	host, port, user, password, "bash_trainer_cache")
-
-	psqlInfo := "host=" + Config.pg.host +
-		"port=" + strconv.Itoa(Config.pg.port) +
-		"user=" + Config.pg.user +
-		"password=" + Config.pg.password +
-		"dbname=" + Config.pg.dbname +
-		"sslmode=disable"
+	psqlInfo := "host=" + Config.Pg.Host +
+		" port=" + strconv.Itoa(Config.Pg.Port) +
+		" user=" + Config.Pg.User +
+		" password=" + Config.Pg.Password +
+		" dbname=" + Config.Pg.Dbname +
+		" sslmode=disable"
 
 	db, err := sql.Open("postgres", psqlInfo)
 
@@ -75,7 +71,6 @@ func Authenticate(username string, password string) (bool, error) {
 	rows, err := db.Query("select * from accounts where name = '" + username + "'")
 
 	if err != nil {
-		fmt.Println(err.Error())
 		return false, err
 	}
 
@@ -89,7 +84,6 @@ func Authenticate(username string, password string) (bool, error) {
 		err := rows.Scan(&a.id, &a.name, &a.pass_hash)
 
 		if err != nil {
-			fmt.Println(err)
 			continue
 		}
 		accounts = append(accounts, a)

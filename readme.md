@@ -4,7 +4,7 @@ Welcome to **Linux /bin/bash trainer**! This application is designed to help you
 
 ## Getting Started
 
-To try it out, simply navigate to [olegzhmelev.ru/bash_trainer](https://olegzhmelev.ru/bash_trainer) and start exploring the various **commands** available. **Commands** with `?` symbol come can accept additional parameters. 
+To try it out, simply navigate to [olegzhmelev.ru/bash_trainer](https://olegzhmelev.ru/bash_trainer) and start exploring the various **commands** available. **Commands** with `?` symbol can accept additional parameters. 
 
 ## How to Use
 
