@@ -5,7 +5,36 @@ const queue = document.getElementById('queue');
 const execute = document.getElementById('prompt-buttons-execute');
 const save = document.getElementById('prompt-buttons-save');
 
-const api_hostname = 'http://localhost:4000'
+const modal_username = document.getElementById('modal-username');
+const modal_password = document.getElementById('modal-password');
+const modal_login = document.getElementById('modal-login');
+
+const modal = document.getElementById('myModal');
+
+const apiUrl = `${window.location.protocol}//${window.location.host}/bash_trainer/api`;
+const staticUrl = `${window.location.protocol}//${window.location.host}/bash_trainer/public/static`;
+
+let userToken = '';
+
+modal_login.addEventListener('click', () => {
+    const body = {
+        Username: modal_username.value,
+        Password: modal_password.value,
+    };
+    fetch(`${apiUrl}/login/`, {
+        method: "POST",
+        mode: 'cors',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body)
+    })
+    .then(data => data.json())
+    .then(data => {
+        userToken = data.UserToken;
+        modal.classList.add('hidden');
+    }).catch(data => { console.log(data); });
+});
 
 function onDragStart(event) {
     event
@@ -111,7 +140,7 @@ function appendTaskRunning(token, text) {
     commandQueueStatus.classList.add('command-queue-status');
 
     const commandQueueStatusSymbol = document.createElement('img');
-    commandQueueStatusSymbol.src = '/public/media/vector/three-dots.svg';
+    commandQueueStatusSymbol.src = `${staticUrl}/media/vector/three-dots.svg`;
     commandQueueStatusSymbol.classList.add('command-queue-status-symbol');
 
     const commandQueuePrompt = document.createElement('div');
@@ -123,7 +152,7 @@ function appendTaskRunning(token, text) {
     commandQueueStatusText.innerText = 'Running...';
 
     const commandQueueCross = document.createElement('img');
-    commandQueueCross.src = '/public/media/vector/x.svg';
+    commandQueueCross.src = `${staticUrl}/media/vector/x.svg`;
     commandQueueCross.classList.add('command-queue-cross');
 
     commandQueueRunning.appendChild(commandQueueStatus);
@@ -143,7 +172,7 @@ function appendTaskRunning(token, text) {
 
     let interval;
     interval = setInterval(() => {
-        fetch(api_hostname + '/api/task/' + token)
+        fetch(`${apiUrl}/task/` + token)
             .then(data => data.json())
             .then(data => {
                 if (data.Status > 0) {
@@ -151,13 +180,13 @@ function appendTaskRunning(token, text) {
                         commandQueueRunning.className = 'command-queue-done';
                         commandQueueStatusText.innerText = `"${text}" Done!`;
                         commandQueuePrompt.innerText = data.Output;
-                        commandQueueStatusSymbol.src = '/public/media/vector/check.svg';
+                        commandQueueStatusSymbol.src = `${staticUrl}/media/vector/check.svg`;
                     }
                     else {
                         commandQueueRunning.className = 'command-queue-failed';
                         commandQueueStatusText.innerText = 'Failed!';
                         commandQueuePrompt.innerText = data.Output;
-                        commandQueueStatusSymbol.src = '/public/media/vector/emoji-frown.svg';
+                        commandQueueStatusSymbol.src = `${staticUrl}/media/vector/emoji-frown.svg`;
                     }
                     clearInterval(interval);
                 }
@@ -173,7 +202,9 @@ class Command {
 }
 
 const commands = [
-    new Command('cd ?;', true),
+    new Command(' | ', false),
+    new Command(' && ', false),
+    new Command('cd ?', true),
     new Command('ls -1', false),
     new Command('xargs cat', false),
     new Command('find . ? -type f', true),
@@ -206,12 +237,7 @@ function extractCommandFromPrompt() {
             command_text = command_text.replace('?', command_args_node.value);
         }
 
-        constructed_command += command_text;
-
-        if (i != prompt.childNodes.length - 1 &&
-            command_text[command_text.length - 1] != ';') {
-            constructed_command += ' | ';
-        }
+        constructed_command += command_text + ' ';
     }
 
     return constructed_command;
@@ -222,10 +248,10 @@ execute.addEventListener('click', () => {
 
     const body = {
         Text: command,
-        UserToken: 'testtesttest'
+        UserToken: userToken
     }
 
-    fetch(api_hostname + '/api/command/execute/', {
+    fetch(`${apiUrl}/command/execute/`, {
         method: "POST",
         mode: 'cors',
         headers: {
@@ -237,5 +263,5 @@ execute.addEventListener('click', () => {
         .then(data => {
             appendTaskRunning(data.TaskToken, command)
         }).catch(data => {
-        });
+    });
 });

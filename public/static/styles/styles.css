@@ -1,0 +1,243 @@
+* {
+    font-family: "Cutive Mono", monospace;
+}
+
+body {
+    background-color: #f0f0f0;
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1, h2 {
+    text-align: center;
+}
+
+.content-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    width: 80%;
+    border-radius: 10px;
+
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+    margin-top: 20px;
+}
+
+#prompt, #palette, #queue {
+    min-height: 111px;
+
+    margin: 20px 0;
+    display: flex;
+
+    flex-wrap: wrap;
+
+    width: 80%;
+
+    border-radius: 10px;
+
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#prompt-buttons {
+    display: flex;
+    flex-direction: row;
+}
+
+.command-palette, .command-prompt, .command-queue {
+    animation: 0.3s ease-out 0s 1 appear;
+}
+
+.command-palette, .command-prompt, button {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    height: 30px;
+    padding: 10px 20px;
+    margin: 10px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+
+    font-size: 1rem;
+}
+
+button {
+    border: none;
+    text-decoration: none;
+    cursor: pointer;
+    outline: none;
+    height: auto;
+}
+
+@keyframes appear {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 100%;
+    }
+}
+
+.command-prompt-args {
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    margin-left: 10px;
+}
+
+.command-prompt-text {
+    pointer-events: none;
+}
+
+.prompt-command-container {
+    padding: 10px 20px;
+    margin: 0 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#queue {
+    flex-direction: column;
+    flex-wrap: nowrap;
+}
+
+.command-queue-running, .command-queue-done, .command-queue-failed {
+    transition: all 0.3s;
+    animation: 0.3s ease-out 0s 1 appear;
+
+    min-height: 30px;
+
+    margin: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+
+    align-items: center;
+
+    border-radius: 10px;
+
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.command-queue-status {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.command-queue-status-symbol {
+    width: 30px;
+}
+
+.command-queue-prompt {
+    font-size: 1rem;
+    text-wrap: wrap;
+}
+
+.command-queue-cross {
+    height: 30px;
+    cursor: pointer;
+}
+
+button:hover,
+.command-prompt:hover,
+.command-palette:hover,
+.command-prompt-draggedover,
+.command-dragged,
+.command:active {
+    background-color: #2980b9 !important;
+}
+
+.command-palette,
+.command-prompt,
+.command-queue-running,
+button {
+    background-color: #3498db;
+    color: #fff;
+}
+
+.command-queue-done {
+    background-color: #8cdb7f;
+    color: #fff;
+}
+
+.command-queue-failed {
+    background-color: #da5b5f;
+    color: #fff;
+}
+
+.input-collage {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-collage input {
+    padding: 0 10px;
+    height: 40px;
+    margin: 10px 10px;
+    border: 1px solid black;
+    border-radius: 10px;
+}
+
+/* The Modal (background) */
+.modal {
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+  
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+    max-width: 600px;
+}  
+
+.hidden {
+    display: none;
+}
+
+/* Mobile version */
+@media (max-width: 767px) {
+    .content-block, #prompt, #palette, #queue {
+        width: 100%;
+        border-radius: 0;
+        box-shadow: none;
+        margin: 0;
+    }
+
+    h1, h2 {
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+
+    .content-block h2 {
+        background-color: #f0f0f0;
+    }
+
+    .command-queue-done *, .command-queue-running *, .command-queue-failed *{
+        font-size: 0.6rem;
+        flex-grow: 1;
+    }
+}

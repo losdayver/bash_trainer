@@ -1,37 +1,29 @@
-package main
+package handlers
 
 import (
 	"encoding/json"
 	"errors"
-	"log"
 	"net/http"
 	"os/exec"
 	"sync"
 	"time"
 
 	"github.com/gofrs/uuid/v5"
+	"github.com/losdayver/bash_trainer/persistence"
 )
 
-const (
-	TASK_RUNNING = 0
-	TASK_DONE    = 1
-	TASK_FAILED  = 2
-)
+func OptionsCorsHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "*")
+	w.Header().Set("Origin", persistence.Config.Origin)
 
-type Task struct {
-	TaskToken uuid.UUID
-	Status    int
-	Output    string
+	w.WriteHeader(204)
 }
 
 var Tasks TaskHashMap = TaskHashMap{
 	Hashmap: make(map[uuid.UUID]*Task),
 	Mutex:   &sync.Mutex{},
-}
-
-type TaskHashMap struct {
-	Hashmap map[uuid.UUID]*Task
-	Mutex   *sync.Mutex
 }
 
 func (taskHashMap TaskHashMap) AppendTask(token uuid.UUID, task *Task) {
@@ -66,37 +58,68 @@ func (taskHashMap TaskHashMap) ChangeStatus(token uuid.UUID, status int, output 
 	taskHashMap.Hashmap[token].Output = output
 }
 
-var Origin string = "localhost:4000"
-
-type CommandExecuteBody struct {
-	Text      string
-	UserToken string
+var UserSessions UserSessionHashMap = UserSessionHashMap{
+	Hashmap: make(map[string]uuid.UUID),
+	Mutex:   &sync.Mutex{},
 }
 
-type CommandPaletteBody struct {
-	Success  bool
-	Commands []string
+func (userSessions UserSessionHashMap) AddOrRenew(username string) uuid.UUID {
+	defer userSessions.Mutex.Unlock()
+
+	userToken, _ := uuid.NewV4()
+	userSessions.Mutex.Lock()
+	userSessions.Hashmap[username] = userToken
+	return userToken
 }
 
-func ApiWrapper(handler func(w http.ResponseWriter, r *http.Request)) func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Headers", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "*")
-		w.Header().Set("Origin", Origin)
+func (userSessions UserSessionHashMap) TestExists(userTokenStr string) bool {
+	userToken, err := uuid.FromString(userTokenStr)
 
-		handler(w, r)
+	if err != nil {
+		return false
 	}
+
+	for _, value := range userSessions.Hashmap {
+		if value == userToken {
+			return true
+		}
+	}
+
+	return false
 }
 
-func OptionsCorsHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "*")
-	w.Header().Set("Origin", Origin)
+func PostLoginHandler(w http.ResponseWriter, r *http.Request) {
+	var body Creds
 
-	w.WriteHeader(204)
+	err := json.NewDecoder(r.Body).Decode(&body)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	authenticated, err := persistence.Authenticate(body.Username, body.Password)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if authenticated {
+		userToken := UserSessions.AddOrRenew(body.Username)
+
+		userTokenBody := UserToken{UserToken: userToken.String()}
+		jsonData, err := json.Marshal(userTokenBody)
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		w.Write(jsonData)
+	} else {
+		http.Error(w, "Invalid Credentials", http.StatusBadRequest)
+	}
 }
 
 func PostCommandExecuteHandler(w http.ResponseWriter, r *http.Request) {
@@ -106,6 +129,11 @@ func PostCommandExecuteHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if !UserSessions.TestExists(body.UserToken) {
+		http.Error(w, "Invalid Token", http.StatusBadRequest)
 		return
 	}
 
@@ -136,7 +164,7 @@ func PostCommandExecuteHandler(w http.ResponseWriter, r *http.Request) {
 	go func() {
 		time.Sleep(time.Second * 1)
 
-		cmd := exec.Command("bash", "-c", "cd ./Library/; "+body.Text)
+		cmd := exec.Command("/bin/bash", "-c", "cd ./public/library && "+body.Text)
 
 		stdout, err := cmd.Output()
 
@@ -179,30 +207,7 @@ func GetTaskHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Write(jsonData)
-
-	// Tasks.RemoveTask(token)
 }
 
 func GetCommandPalette(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func main() {
-	mux := http.NewServeMux()
-
-	fs := http.FileServer(http.Dir("./public/"))
-
-	// Map the URL path "/home/" to "index.html"
-	mux.Handle("/public/", http.StripPrefix("/public/", fs))
-
-	mux.HandleFunc("POST /api/command/execute/{$}", ApiWrapper(PostCommandExecuteHandler))
-	mux.HandleFunc("GET /api/task/{token}", ApiWrapper(GetTaskHandler))
-	mux.HandleFunc("OPTIONS /api/", OptionsCorsHandler)
-
-	// Serving index.html
-	mux.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "./public/views/index.html")
-	})
-
-	log.Fatal(http.ListenAndServe(Origin, mux))
 }
