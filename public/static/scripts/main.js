@@ -14,27 +14,16 @@ const modal = document.getElementById('myModal');
 const apiUrl = `${window.location.protocol}//${window.location.host}/bash_trainer/api`;
 const staticUrl = `${window.location.protocol}//${window.location.host}/bash_trainer/public/static`;
 
+let commands = []
+
 let userToken = '';
 
-modal_login.addEventListener('click', () => {
-    const body = {
-        Username: modal_username.value,
-        Password: modal_password.value,
-    };
-    fetch(`${apiUrl}/login/`, {
-        method: "POST",
-        mode: 'cors',
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body)
-    })
-    .then(data => data.json())
-    .then(data => {
-        userToken = data.UserToken;
-        modal.classList.add('hidden');
-    }).catch(data => { console.log(data); });
-});
+class Command {
+    constructor(text, hasArgs) {
+        this.text = text;
+        this.hasArgs = !!hasArgs;
+    }
+}
 
 function onDragStart(event) {
     event
@@ -194,31 +183,6 @@ function appendTaskRunning(token, text) {
     }, 3000);
 }
 
-class Command {
-    constructor(text, hasArgs) {
-        this.text = text;
-        this.hasArgs = !!hasArgs;
-    }
-}
-
-const commands = [
-    new Command(' | ', false),
-    new Command(' && ', false),
-    new Command('cd ?', true),
-    new Command('ls -1', false),
-    new Command('xargs cat', false),
-    new Command('find . ? -type f', true),
-    new Command('wc -c', false),
-    new Command('wc -w', false),
-    new Command('wc -l', false),
-    new Command('grep ?', true),
-    new Command('sed -n "?p"', true)
-]
-
-for (let command of commands) {
-    palette.appendChild(constructPaletteCommand(command.text));
-}
-
 function extractCommandFromPrompt() {
     let constructed_command = '';
 
@@ -243,6 +207,79 @@ function extractCommandFromPrompt() {
     return constructed_command;
 }
 
+async function populatePalette() {
+    commands = [];
+
+    while (palette.firstChild) {
+        palette.removeChild(palette.firstChild);
+    }
+
+    let data = await fetch(`${apiUrl}/palette/`, {
+        method: "POST",
+        mode: 'cors',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            Username: modal_username.value,
+            UserToken: userToken
+        })
+    }).then(data => data.json())
+
+    for (let text of data.Commands) {
+        commands.push(new Command(text, true ? text.includes('?') : false));
+    }
+
+    for (let command of commands) {
+        palette.appendChild(constructPaletteCommand(command.text));
+    }
+}
+
+modal_login.addEventListener('click', () => {
+    const body = {
+        Username: modal_username.value,
+        Password: modal_password.value,
+    };
+    fetch(`${apiUrl}/login/`, {
+        method: "POST",
+        mode: 'cors',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body)
+    })
+    .then(data => data.json())
+    .then(data => {
+        userToken = data.UserToken;
+
+        fetch(`${apiUrl}/palette/`, {
+            method: "POST",
+            mode: 'cors',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                Username: modal_username.value,
+                UserToken: userToken
+            })
+        })
+        .then(data => data.json())
+        .then(data => {
+            for (let text of data.Commands) {
+                commands.push(new Command(text, true ? text.includes('?') : false));
+            }
+
+            for (let command of commands) {
+                palette.appendChild(constructPaletteCommand(command.text));
+            }
+        })
+        .catch(err => { console.log(err); });
+
+        modal.classList.add('hidden');
+    })
+    .catch(err => { console.log(err); });
+});
+
 execute.addEventListener('click', () => {
     const command = extractCommandFromPrompt();
 
@@ -263,5 +300,32 @@ execute.addEventListener('click', () => {
         .then(data => {
             appendTaskRunning(data.TaskToken, command)
         }).catch(data => {
+    });
+});
+
+save.addEventListener('click', () => {
+    const command = extractCommandFromPrompt();
+
+    const body = {
+        Command: command,
+        Username: modal_username.value,
+        UserToken: userToken
+    }
+
+    fetch(`${apiUrl}/command/save/`, {
+        method: "POST",
+        mode: 'cors',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body)
+    })
+    .then(() => {
+        setTimeout(() => {
+            populatePalette()
+        }, 300);
+    })
+    .catch(err => { 
+        console.log(err);
     });
 });

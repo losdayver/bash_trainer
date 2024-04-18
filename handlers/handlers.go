@@ -210,4 +210,60 @@ func GetTaskHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetCommandPalette(w http.ResponseWriter, r *http.Request) {
+	var body GetCommandPacket
+
+	err := json.NewDecoder(r.Body).Decode(&body)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if !UserSessions.TestExists(body.UserToken) {
+		http.Error(w, "Invalid Token", http.StatusBadRequest)
+		return
+	}
+
+	commandList, err := persistence.QueryCommands(body.Username)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	commandPalette := CommandPalettePacket{commandList}
+
+	jsonData, err := json.Marshal(commandPalette)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.Write(jsonData)
+}
+
+func PostCommandSaveHandler(w http.ResponseWriter, r *http.Request) {
+	var body SaveCommandPacket
+
+	err := json.NewDecoder(r.Body).Decode(&body)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if !UserSessions.TestExists(body.UserToken) {
+		http.Error(w, "Invalid Token", http.StatusBadRequest)
+		return
+	}
+
+	err1 := persistence.SaveCommand(body.Username, body.Command)
+
+	if err1 != nil {
+		http.Error(w, err1.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(200)
 }

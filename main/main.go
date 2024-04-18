@@ -27,10 +27,11 @@ func main() {
 
 	fs := http.FileServer(http.Dir("./public/"))
 
-	// Map the URL path "/home/" to "index.html"
 	mux.Handle("/public/", http.StripPrefix("/public/", fs))
 
 	mux.HandleFunc("POST /api/command/execute/{$}", ApiWrapper(handlers.PostCommandExecuteHandler))
+	mux.HandleFunc("POST /api/command/save/{$}", ApiWrapper(handlers.PostCommandSaveHandler))
+	mux.HandleFunc("POST /api/palette/{$}", ApiWrapper(handlers.GetCommandPalette))
 	mux.HandleFunc("GET /api/task/{token}", ApiWrapper(handlers.GetTaskHandler))
 	mux.HandleFunc("POST /api/login/{$}", ApiWrapper(handlers.PostLoginHandler))
 	mux.HandleFunc("OPTIONS /api/", handlers.OptionsCorsHandler)
