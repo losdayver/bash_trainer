@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 
 <head>
     <meta charset="UTF-8">
@@ -7,55 +7,53 @@
     <link rel="stylesheet" href="/bash_trainer/public/static/styles/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cutive+Mono&display=swap" rel="stylesheet">
-    <title>Linux Command Tutorial</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300&display=swap" rel="stylesheet">
+    <title>Тренажер Linux /bin/bash</title>
 </head>
 
 <body>
-    <h1>Linux /bin/bash trainer</h1>
+    <h1>Тренажер Linux /bin/bash</h1>
 
     <div class="content-block">
-        <h2>Construct your Linux command:</h2>
+        <h2>Соберите свою команду и блоков:</h2>
         <div id="prompt" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)"></div>
         <div id="prompt-buttons">
-            <button id="prompt-buttons-execute">Execute command</button>
-            <button id="prompt-buttons-save">Save command to palette</button>
+            <button id="prompt-buttons-execute">Добавить в очередь</button>
+            <button id="prompt-buttons-save">Сохранить в палитру</button>
+            <button id="prompt-buttons-renew">Вернуть команды</button>
         </div>
     </div>
 
     <div class="content-block">
-        <h2>Command palette:</h2>
+        <h2>Палитра команд:</h2>
         <div id="palette"></div>
     </div>
 
     <div class="content-block">
-        <h2>Execution queue:</h2>
+        <h2>Очередь выполнения:</h2>
         <div id="queue"></div>
     </div>
 
-    <h1>Made by Oleg Zhmelev</h1>
+    <h1>Сервис от Олега Жмелева</h1>
+    <h3>Github: <a href="https://github.com/losdayver/bash_trainer">github.com/losdayver/bash_trainer</a></h3>
+
+    <h2>&nbsp</h2>
 
     <div id="myModal" class="modal">
-
-        <!-- Modal content -->
         <div class="modal-content">
-            <h2>Waiting for authentication.</h2>
+            <h2>Ожидание аутентификации.</h2>
             <div class="input-collage">
-                <label for="modal-username">Username:</label>
+                <label for="modal-username">Имя пользователя:</label>
                 <input type="text" id="modal-username">
-                <label for="modal-password">Password:</label>
+                <label for="modal-password">Пароль:</label>
                 <input type="password" id="modal-password">
-                <button id="modal-login">Login</button>
+                <button id="modal-login">Войти</button>
             </div>
-            
         </div>
-      
     </div>
-      
 
     <script src="/bash_trainer/public/static/scripts/main.js" title="">
     </script>
-
 </body>
 
 </html>

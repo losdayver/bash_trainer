@@ -138,7 +138,7 @@ function appendTaskRunning(token, text) {
 
     const commandQueueStatusText = document.createElement('p');
     commandQueueStatusText.classList.add('command-queue-status-text');
-    commandQueueStatusText.innerText = 'Running...';
+    commandQueueStatusText.innerText = 'Выполняется...';
 
     const commandQueueCross = document.createElement('img');
     commandQueueCross.src = `${staticUrl}/media/vector/x.svg`;
@@ -167,13 +167,13 @@ function appendTaskRunning(token, text) {
                 if (data.Status > 0) {
                     if (data.Status === 1) {
                         commandQueueRunning.className = 'command-queue-done';
-                        commandQueueStatusText.innerText = `"${text}" Done!`;
+                        commandQueueStatusText.innerText = `"${text}" Завершена!`;
                         commandQueuePrompt.innerText = data.Output;
                         commandQueueStatusSymbol.src = `${staticUrl}/media/vector/check.svg`;
                     }
                     else {
                         commandQueueRunning.className = 'command-queue-failed';
-                        commandQueueStatusText.innerText = 'Failed!';
+                        commandQueueStatusText.innerText = 'Ошибка!';
                         commandQueuePrompt.innerText = data.Output;
                         commandQueueStatusSymbol.src = `${staticUrl}/media/vector/emoji-frown.svg`;
                     }

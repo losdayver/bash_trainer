@@ -1,24 +1,24 @@
-# Linux /bin/bash trainer
+# Тренажер Linux /bin/bash
 
-Welcome to **Linux /bin/bash trainer**! This application is designed to help you learn how to use bash scripting by breaking down complex tasks into smaller, more manageable building blocks or **commands**.
+Добро пожаловать в тренажер Linux /bin/bash! Это приложение создано для помощи в изучении скриптового языка bash, разбивая сложные задачи на более мелкие, управляемые блоки или ***команды***.
 
-## Getting Started
+## Начало работы
 
-To try it out, simply navigate to [olegzhmelev.ru/bash_trainer](https://olegzhmelev.ru/bash_trainer) and start exploring the various **commands** available. **Commands** with `?` symbol can accept additional parameters. 
+Чтобы приступить, просто перейдите на [olegzhmelev.ru/bash_trainer](https://olegzhmelev.ru/bash_trainer) и начните изучать различные доступные команды. Команды с символом `?` могут принимать дополнительные параметры.
 
-## How to Use
+## Как использовать
 
-1. Login to website.
-2. Navigate to the **command** **palette** section.
-3. Try to drag and drop into the **prompt** section individual **commands** to construct your **prompt**.
-4. Experiment with your own **command** combinations using the building blocks as a guide.
+1. Войдите под своим аккаунтом на веб-сайт.
+2. Перейдите в раздел ***палитры команд***.
+3. Попробуйте перетащить индивидуальные команды в раздел ***сбора команды***, чтобы составить свою команду.
+4. Экспериментируйте с вашими собственными комбинациями команд.
 
-## Contributing
+## Вклад
 
-If you would like to contribute to this project, please fork the repository and submit a pull request with your proposed changes. We welcome any suggestions for new building blocks, improvements to existing content, or bug fixes.
+Если вы хотите внести вклад в этот проект, пожалуйста, сделайте `fork` репозитория и отправьте `pull request` с вашими предложенными изменениями. Я приветствую любые предложения для новых блоков команд, улучшений существующего контента или исправлений ошибок.
 
-## Support
+## Поддержка
 
-If you have any questions or issues while using Bash **Linux /bin/bash trainer**, please reach out to us at [losdayver@yandex.ru](mailto:losdayver@yandex.ru).
+Если у вас возникли вопросы или проблемы при использовании тренажера Linux /bin/bash, пожалуйста, свяжитесь со мной по адресу [losdayver@yandex.ru](mailto:losdayver@yandex.ru).
 
-Happy bash scripting! 🚀
+Счастливого программирования на bash! 🚀

@@ -1,5 +1,5 @@
 * {
-    font-family: "Cutive Mono", monospace;
+    font-family: "IBM Plex Mono", monospace;
 }
 
 body {
@@ -212,6 +212,7 @@ button {
     border: 1px solid #888;
     width: 80%; /* Could be more or less, depending on screen size */
     max-width: 600px;
+    border-radius: 10px;
 }  
 
 .hidden {
