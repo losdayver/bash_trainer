@@ -11,13 +11,18 @@ const modal_login = document.getElementById('modal-login');
 
 const modal = document.getElementById('myModal');
 
+// Host api URL
 const apiUrl = `${window.location.protocol}//${window.location.host}/bash_trainer/api`;
+// Host static dir URL
 const staticUrl = `${window.location.protocol}//${window.location.host}/bash_trainer/public/static`;
 
+// List of Command objects
 let commands = []
 
+// Token from user logging in
 let userToken = '';
 
+// Represents the command with text and boolean value, which is true if command has args
 class Command {
     constructor(text, hasArgs) {
         this.text = text;
@@ -25,12 +30,14 @@ class Command {
     }
 }
 
+// Event happens on cursor dragging over prompt
 function onDragStart(event) {
     event
         .dataTransfer
         .setData('text/plain', event.target.id);
 }
 
+// Event happens on cursor dragging over prompt
 function onDragOver(event) {
     event.preventDefault();
 
@@ -41,6 +48,7 @@ function onDragOver(event) {
     }
 }
 
+// Event happens on cursor leaving prompt
 function onDragLeave(event) {
     event.preventDefault();
 
@@ -51,6 +59,7 @@ function onDragLeave(event) {
     }
 }
 
+// Event happens on drag-and-dropping commands from palette to prompt
 function onDrop(event) {
     const id = event
         .dataTransfer
@@ -74,6 +83,7 @@ function onDrop(event) {
         .clearData();
 }
 
+// Returns new node to be appended to palette
 function constructPaletteCommand(text) {
     let command = document.createElement('div');
 
@@ -93,6 +103,7 @@ function constructPaletteCommand(text) {
     return command;
 }
 
+// Returns new node to be appended to prompt
 function constructPromptCommand(text) {
     const command = document.createElement('div');
 
@@ -120,6 +131,7 @@ function constructPromptCommand(text) {
     return command;
 }
 
+// Appends new task to queue
 function appendTaskRunning(token, text) {
     const commandQueueRunning = document.createElement('div');
     commandQueueRunning.className = 'command-queue-running';
@@ -183,6 +195,7 @@ function appendTaskRunning(token, text) {
     }, 3000);
 }
 
+// Extracts command from prompt as texts
 function extractCommandFromPrompt() {
     let constructed_command = '';
 
@@ -207,13 +220,8 @@ function extractCommandFromPrompt() {
     return constructed_command;
 }
 
+// Loads commands from server and places them into palette
 async function populatePalette() {
-    commands = [];
-
-    while (palette.firstChild) {
-        palette.removeChild(palette.firstChild);
-    }
-
     let data = await fetch(`${apiUrl}/palette/`, {
         method: "POST",
         mode: 'cors',
@@ -226,6 +234,12 @@ async function populatePalette() {
         })
     }).then(data => data.json())
 
+    commands = [];
+
+    while (palette.firstChild) {
+        palette.removeChild(palette.firstChild);
+    }
+
     for (let text of data.Commands) {
         commands.push(new Command(text, true ? text.includes('?') : false));
     }
@@ -235,6 +249,7 @@ async function populatePalette() {
     }
 }
 
+// Handler for logging in
 modal_login.addEventListener('click', () => {
     const body = {
         Username: modal_username.value,
@@ -280,6 +295,7 @@ modal_login.addEventListener('click', () => {
     .catch(err => { console.log(err); });
 });
 
+// Handler for executing commands from prompt
 execute.addEventListener('click', () => {
     const command = extractCommandFromPrompt();
 
@@ -303,6 +319,7 @@ execute.addEventListener('click', () => {
     });
 });
 
+// Handler for saving commands
 save.addEventListener('click', () => {
     const command = extractCommandFromPrompt();
 

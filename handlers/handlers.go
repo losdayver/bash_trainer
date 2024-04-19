@@ -12,26 +12,19 @@ import (
 	"github.com/losdayver/bash_trainer/persistence"
 )
 
-func OptionsCorsHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "*")
-	w.Header().Set("Origin", persistence.Config.Origin)
-
-	w.WriteHeader(204)
-}
-
 var Tasks TaskHashMap = TaskHashMap{
 	Hashmap: make(map[uuid.UUID]*Task),
 	Mutex:   &sync.Mutex{},
 }
 
+// Appends new task to TaskHashMap
 func (taskHashMap TaskHashMap) AppendTask(token uuid.UUID, task *Task) {
 	taskHashMap.Mutex.Lock()
 	taskHashMap.Hashmap[token] = task
 	defer taskHashMap.Mutex.Unlock()
 }
 
+// Removes existing task from TaskHashMap
 func (taskHashMap TaskHashMap) RemoveTask(token uuid.UUID) error {
 	defer taskHashMap.Mutex.Unlock()
 
@@ -45,12 +38,14 @@ func (taskHashMap TaskHashMap) RemoveTask(token uuid.UUID) error {
 	}
 }
 
+// Returns existing task from TaskHashMap by its token
 func (taskHashMap TaskHashMap) GetTask(token uuid.UUID) *Task {
 	defer taskHashMap.Mutex.Unlock()
 	taskHashMap.Mutex.Lock()
 	return taskHashMap.Hashmap[token]
 }
 
+// Changes task status of task with specified token
 func (taskHashMap TaskHashMap) ChangeStatus(token uuid.UUID, status int, output string) {
 	defer taskHashMap.Mutex.Unlock()
 	taskHashMap.Mutex.Lock()
@@ -63,6 +58,7 @@ var UserSessions UserSessionHashMap = UserSessionHashMap{
 	Mutex:   &sync.Mutex{},
 }
 
+// Adds a new token for newly authenticated user or renewes it if session exists
 func (userSessions UserSessionHashMap) AddOrRenew(username string) uuid.UUID {
 	defer userSessions.Mutex.Unlock()
 
@@ -72,6 +68,7 @@ func (userSessions UserSessionHashMap) AddOrRenew(username string) uuid.UUID {
 	return userToken
 }
 
+// Tests if session if user with specified token exists
 func (userSessions UserSessionHashMap) TestExists(userTokenStr string) bool {
 	userToken, err := uuid.FromString(userTokenStr)
 
@@ -88,18 +85,27 @@ func (userSessions UserSessionHashMap) TestExists(userTokenStr string) bool {
 	return false
 }
 
+// Handles browser preflight CORS request
+func OptionsCorsHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "*")
+	w.Header().Set("Origin", persistence.Config.Origin)
+
+	w.WriteHeader(204)
+}
+
+// Authenticates user by username and password
 func PostLoginHandler(w http.ResponseWriter, r *http.Request) {
 	var body Creds
 
 	err := json.NewDecoder(r.Body).Decode(&body)
-
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	authenticated, err := persistence.Authenticate(body.Username, body.Password)
-
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -122,6 +128,7 @@ func PostLoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Adds task to execution hashmap and returns token
 func PostCommandExecuteHandler(w http.ResponseWriter, r *http.Request) {
 	var body CommandExecuteBody
 
@@ -177,6 +184,7 @@ func PostCommandExecuteHandler(w http.ResponseWriter, r *http.Request) {
 	}()
 }
 
+// Returns task by its token
 func GetTaskHandler(w http.ResponseWriter, r *http.Request) {
 	tokenParam := r.PathValue("token")
 
@@ -209,6 +217,7 @@ func GetTaskHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonData)
 }
 
+// Returns command list for specified user from database
 func GetCommandPalette(w http.ResponseWriter, r *http.Request) {
 	var body GetCommandPacket
 
@@ -243,6 +252,7 @@ func GetCommandPalette(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonData)
 }
 
+// Saves command for specified user from database
 func PostCommandSaveHandler(w http.ResponseWriter, r *http.Request) {
 	var body SaveCommandPacket
 

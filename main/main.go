@@ -8,6 +8,7 @@ import (
 	"github.com/losdayver/bash_trainer/persistence"
 )
 
+// Wraps handler functions, adding CORS headers
 func ApiWrapper(handler func(w http.ResponseWriter, r *http.Request)) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -25,10 +26,11 @@ func main() {
 
 	mux := http.NewServeMux()
 
+	// Handles static files
 	fs := http.FileServer(http.Dir("./public/"))
-
 	mux.Handle("/public/", http.StripPrefix("/public/", fs))
 
+	// Handlers
 	mux.HandleFunc("POST /api/command/execute/{$}", ApiWrapper(handlers.PostCommandExecuteHandler))
 	mux.HandleFunc("POST /api/command/save/{$}", ApiWrapper(handlers.PostCommandSaveHandler))
 	mux.HandleFunc("POST /api/palette/{$}", ApiWrapper(handlers.GetCommandPalette))
@@ -36,7 +38,7 @@ func main() {
 	mux.HandleFunc("POST /api/login/{$}", ApiWrapper(handlers.PostLoginHandler))
 	mux.HandleFunc("OPTIONS /api/", handlers.OptionsCorsHandler)
 
-	// Serving index.html
+	// Serves index.html
 	mux.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "./public/static/views/index.html")
 	})

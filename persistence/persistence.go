@@ -14,6 +14,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
+// Contains parameters to be used in pgsql connection string
 type PgType struct {
 	Host     string
 	Port     int
@@ -22,19 +23,30 @@ type PgType struct {
 	Dbname   string
 }
 
+// Configuration struct
 type ConfigType struct {
 	Origin string
 	Pg     PgType
 }
 
+// Represents row from database table "accounts"
 type Account struct {
 	id        int
 	name      string
 	pass_hash string
 }
 
+// Represents command pulled from database table "commands"
+type QueryCommand struct {
+	text string
+}
+
 var Config ConfigType
 
+// Connection string
+var psqlInfo string
+
+// Sets values for Config and psqlInfo
 func Init() {
 	fileContents, err := os.ReadFile("./conf.d/persistence.json")
 
@@ -48,19 +60,20 @@ func Init() {
 	if err != nil {
 		panic("invalid configuration provided in persistence.json!")
 	}
-}
 
-func Authenticate(username string, password string) (bool, error) {
-	hash := sha256.Sum256([]byte(password))
-
-	hashPass := hex.EncodeToString(hash[:])
-
-	psqlInfo := "host=" + Config.Pg.Host +
+	psqlInfo = "host=" + Config.Pg.Host +
 		" port=" + strconv.Itoa(Config.Pg.Port) +
 		" user=" + Config.Pg.User +
 		" password=" + Config.Pg.Password +
 		" dbname=" + Config.Pg.Dbname +
 		" sslmode=disable"
+}
+
+// Authenticates user in database table accounts
+func Authenticate(username string, password string) (bool, error) {
+	hash := sha256.Sum256([]byte(password))
+
+	hashPass := hex.EncodeToString(hash[:])
 
 	db, err := sql.Open("postgres", psqlInfo)
 
@@ -91,25 +104,15 @@ func Authenticate(username string, password string) (bool, error) {
 		accounts = append(accounts, a)
 	}
 
-	if accounts[0].pass_hash == hashPass {
+	if len(accounts) != 0 && accounts[0].pass_hash == hashPass {
 		return true, nil
 	}
 
 	return false, errors.New("invalid password")
 }
 
-type QueryCommand struct {
-	text string
-}
-
+// Gets commands from database that are assigned to specified user
 func QueryCommands(username string) ([]string, error) {
-	psqlInfo := "host=" + Config.Pg.Host +
-		" port=" + strconv.Itoa(Config.Pg.Port) +
-		" user=" + Config.Pg.User +
-		" password=" + Config.Pg.Password +
-		" dbname=" + Config.Pg.Dbname +
-		" sslmode=disable"
-
 	db, err := sql.Open("postgres", psqlInfo)
 
 	if err != nil {
@@ -172,14 +175,8 @@ func QueryCommands(username string) ([]string, error) {
 	return command_list, nil
 }
 
+// Saves new command for specified user
 func SaveCommand(username, command string) error {
-	psqlInfo := "host=" + Config.Pg.Host +
-		" port=" + strconv.Itoa(Config.Pg.Port) +
-		" user=" + Config.Pg.User +
-		" password=" + Config.Pg.Password +
-		" dbname=" + Config.Pg.Dbname +
-		" sslmode=disable"
-
 	db, err := sql.Open("postgres", psqlInfo)
 
 	if err != nil {
